@@ -1,0 +1,21 @@
+{
+  "name": "weraise-js",
+  "version": "0.1.0",
+  "description": "",
+  "main": "src/weraise.js",
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start karma.conf.js"
+  },
+  "author": "karthik@weraiseapp.com, daniel@weraiseapp.com",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-uglify": "^2.0.0",
+    "jasmine": "^2.4.1",
+    "karma": "^1.2.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.0.2"
+  }
+}

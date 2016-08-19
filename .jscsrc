@@ -1,0 +1,66 @@
+{
+  "excludeFiles": ["src/ngLocale/**"],
+  "disallowKeywords": ["with"],
+  "disallowKeywordsOnNewLine": ["else"],
+  "disallowMixedSpacesAndTabs": true,
+  "disallowMultipleLineStrings": true,
+  "disallowMultipleLineBreaks": true,
+  "disallowUnusedParams": false,
+  "disallowArrowFunctions": true,
+  "disallowNewlineBeforeBlockStatements": true,
+  "disallowSpaceAfterObjectKeys": true,
+  "disallowEmptyBlocks": true,
+  "disallowSpaceAfterPrefixUnaryOperators": ["++", "--", "+", "-", "~", "!"],
+  "disallowSpaceBeforeBinaryOperators": [","],
+  "disallowSpaceBeforePostfixUnaryOperators": ["++", "--"],
+  "disallowSpacesInsideObjectBrackets": true,
+  "disallowImplicitTypeConversion": ["string"],
+  "disallowOperatorBeforeLineBreak": ["+", "."],
+  "disallowMultipleSpaces": true,
+  "disallowNamedUnassignedFunctions": true,
+  "disallowNestedTernaries": { "maxLevel": 1 },
+  "disallowIdentifierNames": ["temp", "foo", "bar", "boom", "i", "j", "k", "obj", "object", "arr", "array"],
+  "disallowSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpacesInCallExpression": true,
+  "disallowSpacesInFunctionDeclaration": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpacesInNamedFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpacesInsideArrayBrackets": true,
+  "requireSpaceBeforeKeywords": [
+    "else",
+    "while",
+    "catch"
+  ],
+  "disallowSpacesInsideParentheses": true,
+  "disallowTrailingComma": true,
+  "disallowTrailingWhitespace": true,
+  "requireCommaBeforeLineBreak": true,
+  "requireLineFeedAtFileEnd": true,
+  "requireSpaceAfterBinaryOperators": ["?", ":", "+", "-", "/", "*", "%", "==", "===", "!=", "!==", ">", ">=", "<", "<=", "&&", "||", ",", ":"],
+  "requireSpaceBeforeBinaryOperators": ["?", ":", "+", "-", "/", "*", "%", "==", "===", "!=", "!==", ">", ">=", "<", "<=", "&&", "||"],
+  "requireSpaceAfterKeywords": ["if", "else", "for", "while", "do", "switch", "return", "try", "catch"],
+  "requireSpaceBeforeBlockStatements": true,
+  "requireSpacesInConditionalExpression": {
+    "afterTest": true,
+    "beforeConsequent": true,
+    "afterConsequent": true,
+    "beforeAlternate": true
+  },
+  "requireSpacesInForStatement": true,
+  "requireSpacesInFunction": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "requireVarDeclFirst": true,
+  "validateLineBreaks": "LF",
+  "validateNewlineAfterArrayElements": true,
+  "validateAlignedFunctionParameters": {
+    "lineBreakAfterOpeningBrace": true,
+    "lineBreakBeforeClosingBrace": true
+  },
+  "safeContextKeyword": ["_this"]
+}

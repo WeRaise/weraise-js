@@ -1,0 +1,7 @@
+# -*- mode: gitignore; -*-
+
+# Project Tooling
+node_modules
+
+# Build files
+dist/*
