@@ -11,6 +11,9 @@ var weraise = (function() {
   var auth = wrClientSideAuth("http://localhost:8001/");
 
   // Public Members --------------------------------------------------------- //
+  var exports = {
+    auth: auth
+  };
 
   return exports;
 })();
