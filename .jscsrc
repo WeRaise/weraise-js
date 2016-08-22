@@ -55,7 +55,7 @@
   "requireSpacesInFunction": {
     "beforeOpeningCurlyBrace": true
   },
-  "requireVarDeclFirst": true,
+  "requireVarDeclFirst": false,
   "validateLineBreaks": "LF",
   "validateNewlineAfterArrayElements": true,
   "validateAlignedFunctionParameters": {
