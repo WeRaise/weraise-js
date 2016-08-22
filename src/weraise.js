@@ -1,6 +1,27 @@
-'use strict';
+/* globals
+     wrClientSideAuth,
+     utils */
 
-var weraise = {};
+// WeRaise library                                                            //
+// -------------------------------------------------------------------------- //
+var weraise = (function() {
+  "use strict";
 
-// Export library to window
-window.weraise = weraise || {};
+  // Private Members -------------------------------------------------------- //
+  var auth = wrClientSideAuth("http://localhost:8001/");
+
+  // Public Members --------------------------------------------------------- //
+
+  return exports;
+})();
+
+// Exports ------------------------------------------------------------------ //
+// We need to export the library carefully for both browser and node
+if (typeof exports !== 'undefined') {
+  if (typeof module !== 'undefined' && module.exports) {
+    exports = module.exports = weraise;
+  }
+  exports.weraise = weraise;
+} else {
+  window.weraise = weraise;
+}
