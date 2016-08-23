@@ -88,15 +88,11 @@ var wrClientSideAuth = function(
     // Assign styles non-destructively
     Object.assign(authFrame.style, { // TODO: polyfill needed
       position: "fixed",
-      top: "20%",
-      height: "60%",
-      left: "50%",
-      marginLeft: "-300px",
-      width: "600px",
-      maxWidth: "100%",
-      boxShadow: "0px 0px 30px 0px #eee",
+      top: "0px",
+      height: "100%",
+      left: "0px",
+      width: "100%",
       border: "none",
-      backgroundColor: "#efefef",
       zIndex: "1001"
     });
 
