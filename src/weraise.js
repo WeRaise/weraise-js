@@ -7,14 +7,12 @@
 var weraise = (function() {
   "use strict";
 
-  // Private Members -------------------------------------------------------- //
   var auth = wrClientSideAuth("http://localhost:8001/");
 
   // Public Members --------------------------------------------------------- //
   var exports = {
     auth: auth
   };
-
   return exports;
 })();
 
