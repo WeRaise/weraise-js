@@ -84,6 +84,7 @@ var wrClientSideAuth = function(
     var authFrame = document.createElement("iframe");
     authFrame.setAttribute("id", namespace + "-authframe");
     authFrame.setAttribute("src", url);
+    authFrame.setAttribute("sandbox", "allow-top-navigation allow-scripts allow-forms");
 
     // Assign styles non-destructively
     Object.assign(authFrame.style, { // TODO: polyfill needed
