@@ -8,6 +8,7 @@ var wrClientSideAuth = function(
     providerUrl,
     authOptions,
     client,
+    saveStateFn,
     domNamespace
   ) {
   "use strict";
@@ -17,22 +18,23 @@ var wrClientSideAuth = function(
   var application, namespace;
   var options = {};
 
+  if (providerUrl === undefined) {
+    throw {
+      error: "missing_parameter",
+      message: "providerUrl: You must give a provider URL"
+    };
+  }
+
   /**
    * Setup the library with configuration options
    * @param {Object} clientDetails
    */
-  function configure(authOptions, client, domNamespace) {
+  function configure(authOptions, client, saveStateFn, domNamespace) {
     application = client || store.get("application") || {};
     store.set("application", application);
 
     namespace = domNamespace || namespace || "wr";
-
-    if (providerUrl === undefined) {
-      throw {
-        error: "missing_parameter",
-        message: "providerUrl: You must give a provider URL"
-      };
-    }
+    saveStateFn = saveStateFn || undefined;
 
     // Setup some default options and override if available
     var defaultOptions = {
@@ -53,7 +55,7 @@ var wrClientSideAuth = function(
         defaultOptions.access_type
     };
   }
-  configure(client, domNamespace, authOptions);
+  configure(authOptions, client, saveStateFn, domNamespace);
 
   /**
    * Generate an options object from default options, application information,
@@ -156,6 +158,7 @@ var wrClientSideAuth = function(
   function handleAuthError(error, cb) {
     // Give error to application
     if (cb !== undefined) {
+      saveStateFn();
       cb(error);
     }
     // Initiate new auth process
