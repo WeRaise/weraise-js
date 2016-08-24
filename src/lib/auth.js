@@ -1,41 +1,59 @@
 /* globals
+     wrStore,
      utils */
 
 // WeRaise OAuth2 Client                                                      //
 // -------------------------------------------------------------------------- //
 var wrClientSideAuth = function(
     providerUrl,
-    domNamespace,
     authOptions,
-    client
+    client,
+    domNamespace
   ) {
   "use strict";
 
   // Private Members -------------------------------------------------------- //
-  var application = client || {};
-  var namespace = domNamespace || "wr";
+  var store = new wrStore("wrClientSideAuth");
+  var application, namespace;
+  var options = {};
 
-  if (providerUrl === undefined) {
-    throw {
-      error: "missing_parameter",
-      message: "providerUrl: You must give a provider URL"
+  /**
+   * Setup the library with configuration options
+   * @param {Object} clientDetails
+   */
+  function configure(authOptions, client, domNamespace) {
+    application = client || store.get("application") || {};
+    store.set("application", application);
+
+    namespace = domNamespace || namespace || "wr";
+
+    if (providerUrl === undefined) {
+      throw {
+        error: "missing_parameter",
+        message: "providerUrl: You must give a provider URL"
+      };
+    }
+
+    // Setup some default options and override if available
+    var defaultOptions = {
+      scope: [],
+      grant_type: "implicit",
+      access_type: "online"
     };
-  }
-
-  // Setup some default options and override if available
-  var options = {
-    scope: [],
-    grant_type: "implicit",
-    access_type: "online"
-  };
-  if (authOptions !== undefined) {
+    if (authOptions === undefined || authOptions === null) {
+      authOptions = {};
+    }
     options = {
-      scope: authOptions.scope || options.scope,
-      grant_type: authOptions.grant_type || options.grant_type,
-      response_type: authOptions.response_type || options.response_type,
-      access_type: authOptions.access_type || options.access_type
+      scope: authOptions.scope || options.scope || defaultOptions.scope,
+      grant_type: authOptions.grant_type || options.grant_type ||
+        defaultOptions.grant_type,
+      response_type: authOptions.response_type || options.response_type ||
+        defaultOptions.response_type,
+      access_type: authOptions.access_type || options.access_type ||
+        defaultOptions.access_type
     };
   }
+  configure(client, domNamespace, authOptions);
 
   /**
    * Generate an options object from default options, application information,
@@ -50,12 +68,18 @@ var wrClientSideAuth = function(
     generatedOptions.client_id = application.id;
     generatedOptions.redirect_uri = application.redirect_uri;
     // Var user override on per-request basis
-    Object.keys(requestOptions).forEach(function(key) {
-      generatedOptions[key] = requestOptions[key];
-    });
+    if (requestOptions !== undefined && requestOptions !== null) {
+        Object.keys(requestOptions).forEach(function(key) {
+            generatedOptions[key] = requestOptions[key];
+        });
+    }
     return generatedOptions;
   }
 
+  /**
+   * Adds a full page div which darkens the screen
+   * @returns {}
+   */
   function darkenPage() {
     var darkenElement = document.createElement("div");
     darkenElement.setAttribute("id", namespace + "-darkenpage");
@@ -84,7 +108,7 @@ var wrClientSideAuth = function(
     var authFrame = document.createElement("iframe");
     authFrame.setAttribute("id", namespace + "-authframe");
     authFrame.setAttribute("src", url);
-    authFrame.setAttribute("sandbox", "allow-top-navigation allow-scripts allow-forms");
+    authFrame.setAttribute("sandbox", "allow-same-origin allow-top-navigation allow-scripts allow-forms");
 
     // Assign styles non-destructively
     Object.assign(authFrame.style, { // TODO: polyfill needed
@@ -101,28 +125,87 @@ var wrClientSideAuth = function(
     return authFrame;
   }
 
-  // Public Members --------------------------------------------------------- //
-  var exports = {};
+  function getUserRole(token, appId, cb) {
+    var xhr = new XMLHttpRequest();
 
-  /**
-   * Setup the library to use the client with the given client identifier
-   * @param {String} clientId
-   */
-  exports.setClient = function(client) {
-    application = client;
-  };
+    xhr.withCredentials = false;
+
+    xhr.addEventListener("readystatechange", cb);
+
+    xhr.open("GET", utils.constructUrl(providerUrl, ["api", "user"]));
+    xhr.setRequestHeader("X-WeRaiseApp-AppId", store.get("application").id);
+    xhr.setRequestHeader("authorization", "Bearer " + token);
+    xhr.setRequestHeader("content-type", "application/json");
+    xhr.setRequestHeader("cache-control", "no-cache");
+
+    xhr.send();
+  }
 
   /**
   * Initiate the authorization process
   * @param {Array} requestedScope List of requesting scopes
   */
-  exports.start = function(requestOptions) {
+  function start(requestOptions) {
     var options = generateOptions(requestOptions);
     var url = utils.constructUrl(providerUrl, ["oauth", "authorize"], options);
     darkenPage();
     var loginFrame = createLoginElement(url);
     return loginFrame;
-  };
+  }
 
-  return exports;
+  function handleAuthError(error, cb) {
+    // Give error to application
+    if (cb !== undefined) {
+      cb(error);
+    }
+    // Initiate new auth process
+    start();
+  }
+
+  function check(cb) {
+    var token = store.get("token");
+    var tokenType = store.get("tokenType");
+    var expiresAt = store.get("expiresAt");
+
+    var allDefined = token !== null && tokenType !== null && expiresAt !== null;
+    if (!allDefined) { handleAuthError("No saved auth data", cb); return; }
+
+    var expired = (new Date() > expiresAt);
+    if (expired) { handleAuthError("Token Expired", cb); return; }
+
+    // At this point, we need to check validity of token with server
+    // - we do this by fetching the user role
+    getUserRole(token, function() {
+      if (this.readyState === 4) {
+        if (this.status === 200) {
+          cb();
+        } else {
+          handleAuthError("Invalid token", cb);
+        }
+      }
+    });
+    return;
+  }
+
+  /**
+  * Initiate the authorization process
+  * @param {Array} requestedScope List of requesting scopes
+  */
+  function complete(token, tokenType, expiresIn) {
+    // We need to save token etc to local storage
+    store.set("token", token);
+    store.set("tokenType", tokenType);
+    // Figure out the expiry time of the token
+    var currentTime = new Date();
+    var expiresAt = currentTime.setSeconds(currentTime.getSeconds() + expiresIn);
+    store.set("expiresAt", expiresAt);
+  }
+
+  // Public Members --------------------------------------------------------- //
+  return {
+    configure: configure,
+    start: start,
+    check: check,
+    complete: complete
+  };
 };
