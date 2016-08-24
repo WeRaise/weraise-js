@@ -1,0 +1,19 @@
+{
+  "name": "weraise-js",
+  "description": "",
+  "main": "dist/weraise-0.1.0.js",
+  "authors": [
+    "karthik@weraiseapp.com",
+    "daniel@weraiseapp.com"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/WeRaise/weraise-js",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
