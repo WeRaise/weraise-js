@@ -13,11 +13,7 @@ var wrClientSideAuth = function(
   ) {
   "use strict";
 
-  // Private Members -------------------------------------------------------- //
-  var store = new wrStore("wrClientSideAuth");
-  var application, namespace;
-  var options = {};
-
+  // Required Parameters ---------------------------------------------------- //
   if (providerUrl === undefined) {
     throw {
       error: "missing_parameter",
@@ -25,16 +21,21 @@ var wrClientSideAuth = function(
     };
   }
 
+  // Private Members -------------------------------------------------------- //
+  var store = new wrStore("wrClientSideAuth");
+  var application, namespace;
+  var options = {};
+
   /**
    * Setup the library with configuration options
    * @param {Object} clientDetails
    */
-  function configure(authOptions, client, saveStateFn, domNamespace) {
+  function configure(authOptions, client, newSaveStateFn, domNamespace) {
     application = client || store.get("application") || {};
     store.set("application", application);
 
     namespace = domNamespace || namespace || "wr";
-    saveStateFn = saveStateFn || undefined;
+    saveStateFn = newSaveStateFn || saveStateFn || undefined;
 
     // Setup some default options and override if available
     var defaultOptions = {
@@ -155,35 +156,36 @@ var wrClientSideAuth = function(
     return loginFrame;
   }
 
-  function handleAuthError(error, cb) {
-    // Give error to application
-    if (cb !== undefined) {
-      saveStateFn();
-      cb(error);
+  function error(error) {
+    // Notify the user application if possible
+    if (saveStateFn instanceof Function) {
+      saveStateFn(function() {
+        start();
+      });
+    } else {
+      start();
     }
-    // Initiate new auth process
-    start();
   }
 
-  function check(cb) {
+  function check(success) {
     var token = store.get("token");
     var tokenType = store.get("tokenType");
     var expiresAt = store.get("expiresAt");
 
     var allDefined = token !== null && tokenType !== null && expiresAt !== null;
-    if (!allDefined) { handleAuthError("No saved auth data", cb); return; }
+    if (!allDefined) { error("No saved auth data"); return; }
 
     var expired = (new Date() > expiresAt);
-    if (expired) { handleAuthError("Token Expired", cb); return; }
+    if (expired) { error("Token Expired"); return; }
 
     // At this point, we need to check validity of token with server
     // - we do this by fetching the user role
     getUserRole(token, function() {
       if (this.readyState === 4) {
         if (this.status === 200) {
-          cb();
+          success();
         } else {
-          handleAuthError("Invalid token", cb);
+          error("Invalid token");
         }
       }
     });
@@ -209,6 +211,7 @@ var wrClientSideAuth = function(
     configure: configure,
     start: start,
     check: check,
-    complete: complete
+    complete: complete,
+    error: error
   };
 };
