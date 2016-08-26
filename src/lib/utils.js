@@ -11,7 +11,11 @@ var utils = (function() {
    * @returns {String} Query String from ? exclusive
    */
   exports.queryString = function(queryObject) {
-    var encodedList = Object.keys(queryObject).map(function(key) {
+    var nonEmptyKeys = Object.keys(queryObject).filter(function(key) {
+      var value = queryObject[key];
+      return value !== undefined && value !== null;
+    });
+    var encodedList = nonEmptyKeys.map(function(key) {
       var value = queryObject[key];
       if (value instanceof Array) { // for Arrays, we construct a CSV string
         value = queryObject[key].join(",");
