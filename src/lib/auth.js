@@ -83,51 +83,6 @@ var wrClientSideAuth = function(
    * Adds a full page div which darkens the screen
    * @returns {}
    */
-  function darkenPage() {
-    var darkenElement = document.createElement("div");
-    darkenElement.setAttribute("id", namespace + "-darkenpage");
-
-    Object.assign(darkenElement.style, { // TODO: polyfill needed
-      position: "fixed",
-      top: "0px",
-      bottom: "0px",
-      left: "0px",
-      right: "0px",
-      backgroundColor: "#222",
-      opacity: "0.3",
-      zIndex: "1000"
-    });
-
-    document.body.appendChild(darkenElement);
-    return darkenElement;
-  }
-
-  /**
-   * Creates the login iframe, styles it and appends it to the body.
-   * @param {String} url
-   * @returns {DOMElement} authFrame
-   */
-  function createLoginElement(url) {
-    var authFrame = document.createElement("iframe");
-    authFrame.setAttribute("id", namespace + "-authframe");
-    authFrame.setAttribute("src", url);
-    authFrame.setAttribute("sandbox", "allow-same-origin allow-top-navigation allow-scripts allow-forms");
-
-    // Assign styles non-destructively
-    Object.assign(authFrame.style, { // TODO: polyfill needed
-      position: "fixed",
-      top: "0px",
-      height: "100%",
-      left: "0px",
-      width: "100%",
-      border: "none",
-      zIndex: "1001"
-    });
-
-    document.body.appendChild(authFrame);
-    return authFrame;
-  }
-
   function getUserRole(token, appId, cb) {
     var xhr = new XMLHttpRequest();
 
@@ -145,15 +100,13 @@ var wrClientSideAuth = function(
   }
 
   /**
-  * Initiate the authorization process
-  * @param {Array} requestedScope List of requesting scopes
-  */
+   * Initiate the authorization process
+   * @param {Array} requestOptions List of requesting scopes
+   */
   function start(requestOptions) {
     var options = generateOptions(requestOptions);
     var url = utils.constructUrl(providerUrl, ["oauth", "authorize"], options);
-    darkenPage();
-    var loginFrame = createLoginElement(url);
-    return loginFrame;
+    window.location.href = url;
   }
 
   function error(error) {
