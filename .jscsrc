@@ -15,7 +15,7 @@
   "disallowSpaceBeforePostfixUnaryOperators": ["++", "--"],
   "disallowSpacesInsideObjectBrackets": true,
   "disallowImplicitTypeConversion": ["string"],
-  "disallowOperatorBeforeLineBreak": ["+", "."],
+  "disallowOperatorBeforeLineBreak": [],
   "disallowMultipleSpaces": true,
   "disallowNamedUnassignedFunctions": true,
   "disallowNestedTernaries": { "maxLevel": 1 },
