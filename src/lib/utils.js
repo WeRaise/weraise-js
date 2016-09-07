@@ -34,11 +34,18 @@ var utils = (function() {
    */
   exports.constructUrl = function(baseUrl, path, queryObject) {
     var url = baseUrl;
-    if (path) {
-      url += path.join("/");
+    // Remove trailing "/" from baseUrl if it exists
+    if (baseUrl.substring(url.length - 1, url.length) === "/") {
+      url = url.substring(0, url.length - 1);
     }
+    // Construct path and add it (if one exists)
+    if (path) {
+      url += "/" + path.join("/");
+    }
+    // Generate and add queryString (if needed)
     if (queryObject) {
-      url += "?" + exports.queryString(queryObject);
+      var qs = exports.queryString(queryObject);
+      if (qs !== "") { url += "?" + qs; }
     }
     return url;
   };
