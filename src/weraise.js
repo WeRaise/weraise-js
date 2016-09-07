@@ -7,12 +7,32 @@
 var weraise = (function() {
   "use strict";
 
-  var auth = wrClientSideAuth("http://localhost:8001/");
+  var baseUrl,
+      auth,
+      exports = {};
+
+
+  // Constructor ------------------------------------------------------------ //
+  baseUrl = "http://localhost:8001/";
+  exports.auth = new wrClientSideAuth(baseUrl, window);
+
+  function configure(saveStateFn, clientDetails, cb) {
+    exports.auth.configure(
+      {}, // authOptions
+      clientDetails, // client
+      saveStateFn, // saveStateFn
+      undefined // domNamespace
+    );
+    exports.auth.check(
+      // On auth success, we need to complete library configuration
+      function() {
+        getResources(function(r) { exports.resources = r; cb(); });
+      }
+    );
+  }
 
   // Public Members --------------------------------------------------------- //
-  var exports = {
-    auth: auth
-  };
+  exports.configure = configure;
   return exports;
 })();
 
